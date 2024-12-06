@@ -1,5 +1,5 @@
 
-# User Registration Endpoint Documentation
+# User API Documentation
 
 ## **POST** `/users/register`
 
@@ -50,6 +50,51 @@ When the user is successfully registered, the endpoint returns the following res
 
 ---
 
+## **POST** `/users/login`
+
+This endpoint allows a user to log in and returns an authentication token if the credentials are valid.
+
+---
+
+### **Request Body**
+
+The following fields are required in the request body:
+
+| Field      | Type     | Description                   | Validation                    |
+|------------|----------|-------------------------------|--------------------------------|
+| `email`    | `string` | Registered email address      | Must be a valid email format. |
+| `password` | `string` | Account password              | Must not be empty.            |
+
+---
+
+### **Response**
+
+#### **Success (200: OK)**  
+When the user is successfully logged in, the endpoint returns the following response:
+
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "_id": "60f6a7f95c12f9aef8abcd12",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "john.doe@example.com"
+  }
+}
+```
+
+#### **Error Responses**
+
+| Status Code | Error Message                   | Description                         |
+|-------------|---------------------------------|-------------------------------------|
+| `400`       | `"Invalid email or password"`  | Either email or password is invalid.|
+| `401`       | `"Invalid email or password"`  | Authentication failed.              |
+
+---
+
 ### **Validation**
 
 The request body is validated using `express-validator`. The server ensures all required fields are present and meet the specified criteria.
@@ -57,12 +102,7 @@ The request body is validated using `express-validator`. The server ensures all 
 ```javascript
 [
   body("email").isEmail().withMessage("Invalid Email"),
-  body("fullname.firstname")
-    .isLength({ min: 3 })
-    .withMessage("First name must be at least 3 characters long"),
-  body("password")
-    .isLength({ min: 6 })
-    .withMessage("Password must be at least 6 characters long"),
+  body("password").notEmpty().withMessage("Password must not be empty"),
 ]
 ```
 
@@ -72,14 +112,10 @@ The request body is validated using `express-validator`. The server ensures all 
 
 **Request:**
 ```http
-POST /users/register HTTP/1.1
+POST /users/login HTTP/1.1
 Content-Type: application/json
 
 {
-  "fullname": {
-    "firstname": "John",
-    "lastname": "Doe"
-  },
   "email": "john.doe@example.com",
   "password": "securepassword"
 }
@@ -87,7 +123,7 @@ Content-Type: application/json
 
 **Response:**
 ```http
-HTTP/1.1 201 Created
+HTTP/1.1 200 OK
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
