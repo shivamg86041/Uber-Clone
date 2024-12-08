@@ -6,6 +6,7 @@ const PORT = process.env.PORT || 3000;
 const cors = require('cors');
 const userRoutes = require('./routes/user.routes');
 const cookieParser = require('cookie-parser');
+const captainRoutes = require('./routes/captain.routes');
 
 db();
 
@@ -19,6 +20,7 @@ app.get("/", (req, res) =>{
 });
 
 app.use('/users', userRoutes);
+app.use('/captains', captainRoutes);
 
 app.listen(PORT, () =>{
     console.log(`Server is running on port ${PORT}`)
