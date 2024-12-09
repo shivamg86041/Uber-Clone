@@ -1,17 +1,15 @@
-# Creating a full-fledged README.md file for the entire app
+# Writing the comprehensive README.md file for the entire application.
 
-full_readme_content = """
+readme_content = """
 # User & Captain Management API  
 
-This API handles user and captain registrations, authentication, and profile management.  
+This API manages users and captains, handling registration, authentication, profile management, and token-based security.  
 
 ---
 
-## Endpoints  
+## **1. User Endpoints**  
 
-### **1. User Endpoints**  
-
-#### **POST** `/users/register`  
+### **POST** `/users/register`  
 Register a new user.  
 
 **Request Body:**  
@@ -26,8 +24,8 @@ Register a new user.
 
 ---
 
-#### **POST** `/users/login`  
-Login a user.  
+### **POST** `/users/login`  
+Authenticate a user.  
 
 **Request Body:**  
 - `email` (string, required): Must be valid.  
@@ -39,8 +37,8 @@ Login a user.
 
 ---
 
-#### **GET** `/users/profile`  
-Fetch the authenticated user's profile.  
+### **GET** `/users/profile`  
+Retrieve the authenticated user's profile.  
 
 **Headers:**  
 - `Authorization` (string, required): Bearer token.  
@@ -51,8 +49,8 @@ Fetch the authenticated user's profile.
 
 ---
 
-#### **GET** `/users/logout`  
-Logout the authenticated user.  
+### **GET** `/users/logout`  
+Log out the authenticated user.  
 
 **Headers:**  
 - `Authorization` (string, required): Bearer token.  
@@ -63,9 +61,9 @@ Logout the authenticated user.
 
 ---
 
-### **2. Captain Endpoints**  
+## **2. Captain Endpoints**  
 
-#### **POST** `/captains/register`  
+### **POST** `/captains/register`  
 Register a new captain.  
 
 **Request Body:**  
@@ -84,25 +82,58 @@ Register a new captain.
 
 ---
 
-#### **Authentication and Validation Details**  
-- **Password Hashing:** Passwords are hashed before storage for security.  
-- **Token Generation:** Tokens are generated using JWT with a 24-hour expiry.  
-- **Validation Middleware:** `express-validator` is used to validate request bodies.  
+### **POST** `/captains/login`  
+Authenticate a captain.  
+
+**Request Body:**  
+- `email` (string, required): Must be valid.  
+- `password` (string, required): Must not be empty.  
+
+**Response:**  
+- `200 OK`: Returns a token and captain details.  
+- `400/401`: Invalid credentials.  
 
 ---
 
-## **Models**  
+### **GET** `/captains/profile`  
+Retrieve the authenticated captain's profile.  
 
-### User Model  
-- `fullname`: Contains `firstname` and `lastname`.  
-- `email`: Must be unique and valid.  
-- `password`: Encrypted before storage.  
+**Headers:**  
+- `Authorization` (string, required): Bearer token or valid cookie.  
 
-### Captain Model  
-- `fullname`: Contains `firstname` and `lastname`.  
-- `email`: Must be unique and valid.  
-- `password`: Encrypted before storage.  
-- `vehicle`: Contains `color`, `plate`, `capacity`, and `vehicleType`.  
+**Response:**  
+- `200 OK`: Returns captain profile details.  
+- `401 Unauthorized`: Invalid or expired token.  
+
+---
+
+### **GET** `/captains/logout`  
+Log out the authenticated captain by blacklisting the token.  
+
+**Headers:**  
+- `Authorization` (string, required): Bearer token or valid cookie.  
+
+**Response:**  
+- `200 OK`: Successfully logged out.  
+- `401 Unauthorized`: Invalid or expired token.  
+- `401 Unauthorized`: Token is blacklisted.  
+
+---
+
+## **Authentication Middleware**  
+
+### `authCaptain` Middleware  
+Authenticates captains by verifying their tokens and checking if the token is blacklisted.  
+
+**Process:**  
+1. Extracts the token from cookies or the `Authorization` header.  
+2. Validates the token existence.  
+3. Checks if the token is blacklisted.  
+4. Verifies the token using `JWT_SECRET`.  
+5. Attaches captain details to `req.captain`.  
+
+**Error Responses:**  
+- `401 Unauthorized`: Missing, blacklisted, invalid, or expired token.  
 
 ---
 
