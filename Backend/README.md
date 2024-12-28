@@ -1,144 +1,185 @@
-# Writing the comprehensive README.md file for the entire application.
+# Uber Clone Backend
 
-readme_content = """
-# User & Captain Management API  
+This is the backend for the Uber Clone application built with Node.js, Express, and MongoDB. It provides APIs for user and captain authentication, ride management, and map services.
 
-This API manages users and captains, handling registration, authentication, profile management, and token-based security.  
+## Features
 
----
+### User Features
 
-## **1. User Endpoints**  
+1. **User Registration**
+   - Endpoint: `/users/register`
+   - Method: `POST`
+   - Request Body:
+     - `fullname.firstname` (string, required): Min 3 characters.
+     - `fullname.lastname` (string, optional): Min 3 characters.
+     - `email` (string, required): Must be a valid email.
+     - `password` (string, required): Min 6 characters.
+   - Response:
+     - `201 Created`: Returns a token and user details.
+     - `400 Bad Request`: Validation errors.
 
-### **POST** `/users/register`  
-Register a new user.  
+2. **User Login**
+   - Endpoint: `/users/login`
+   - Method: `POST`
+   - Request Body:
+     - `email` (string, required): Must be valid.
+     - `password` (string, required): Must not be empty.
+   - Response:
+     - `200 OK`: Returns a token and user details.
+     - `400/401`: Invalid credentials.
 
-**Request Body:**  
-- `fullname.firstname` (string, required): Min 3 characters.  
-- `fullname.lastname` (string, optional): Min 3 characters.  
-- `email` (string, required): Must be a valid email.  
-- `password` (string, required): Min 6 characters.  
+3. **User Profile**
+   - Endpoint: `/users/profile`
+   - Method: `GET`
+   - Headers:
+     - `Authorization` (string, required): Bearer token.
+   - Response:
+     - `200 OK`: Returns user details.
+     - `401 Unauthorized`: Invalid or expired token.
 
-**Response:**  
-- `201 Created`: Returns a token and user details.  
-- `400 Bad Request`: Validation errors.  
+4. **User Logout**
+   - Endpoint: `/users/logout`
+   - Method: `GET`
+   - Headers:
+     - `Authorization` (string, required): Bearer token.
+   - Response:
+     - `200 OK`: Successfully logged out.
+     - `401 Unauthorized`: Invalid or expired token.
 
----
+### Captain Features
 
-### **POST** `/users/login`  
-Authenticate a user.  
+1. **Captain Registration**
+   - Endpoint: `/captains/register`
+   - Method: `POST`
+   - Request Body:
+     - `fullname.firstname` (string, required): Min 3 characters.
+     - `fullname.lastname` (string, optional): Min 3 characters.
+     - `email` (string, required): Must be a valid email.
+     - `password` (string, required): Min 6 characters.
+     - `vehicle.color` (string, required): Min 3 characters.
+     - `vehicle.plate` (string, required): Min 3 characters.
+     - `vehicle.capacity` (number, required): Min value 1.
+     - `vehicle.vehicleType` (string, required): Must be one of `car`, `motorcycle`, or `auto`.
+   - Response:
+     - `201 Created`: Returns a token and captain details.
+     - `400 Bad Request`: Validation errors or captain already exists.
 
-**Request Body:**  
-- `email` (string, required): Must be valid.  
-- `password` (string, required): Must not be empty.  
+2. **Captain Login**
+   - Endpoint: `/captains/login`
+   - Method: `POST`
+   - Request Body:
+     - `email` (string, required): Must be valid.
+     - `password` (string, required): Must not be empty.
+   - Response:
+     - `200 OK`: Returns a token and captain details.
+     - `400/401`: Invalid credentials.
 
-**Response:**  
-- `200 OK`: Returns a token and user details.  
-- `400/401`: Invalid credentials.  
+3. **Captain Profile**
+   - Endpoint: `/captains/profile`
+   - Method: `GET`
+   - Headers:
+     - `Authorization` (string, required): Bearer token or valid cookie.
+   - Response:
+     - `200 OK`: Returns captain profile details.
+     - `401 Unauthorized`: Invalid or expired token.
 
----
+4. **Captain Logout**
+   - Endpoint: `/captains/logout`
+   - Method: `GET`
+   - Headers:
+     - `Authorization` (string, required): Bearer token or valid cookie.
+   - Response:
+     - `200 OK`: Successfully logged out.
+     - `401 Unauthorized`: Invalid or expired token.
+     - `401 Unauthorized`: Token is blacklisted.
 
-### **GET** `/users/profile`  
-Retrieve the authenticated user's profile.  
+### Ride Features
 
-**Headers:**  
-- `Authorization` (string, required): Bearer token.  
+1. **Create Ride**
+   - Endpoint: `/rides/create`
+   - Method: `POST`
+   - Request Body:
+     - `pickup` (string, required): Min 3 characters.
+     - `destination` (string, required): Min 3 characters.
+     - `vehicleType` (string, required): Must be one of `auto`, `car`, `moto`.
+   - Response:
+     - `201 Created`: Returns ride details.
+     - `400 Bad Request`: Validation errors.
 
-**Response:**  
-- `200 OK`: Returns user details.  
-- `401 Unauthorized`: Invalid or expired token.  
+2. **Get Fare**
+   - Endpoint: `/rides/get-fare`
+   - Method: `GET`
+   - Query Parameters:
+     - `pickup` (string, required): Min 3 characters.
+     - `destination` (string, required): Min 3 characters.
+   - Response:
+     - `200 OK`: Returns fare details.
+     - `400 Bad Request`: Validation errors.
 
----
+3. **Confirm Ride**
+   - Endpoint: `/rides/confirm`
+   - Method: `POST`
+   - Request Body:
+     - `rideId` (string, required): Must be a valid MongoDB ObjectId.
+     - `captainId` (string, required): Must be a valid MongoDB ObjectId.
+   - Response:
+     - `200 OK`: Returns ride details.
+     - `400 Bad Request`: Validation errors.
 
-### **GET** `/users/logout`  
-Log out the authenticated user.  
+4. **Start Ride**
+   - Endpoint: `/rides/start-ride`
+   - Method: `POST`
+   - Request Body:
+     - `rideId` (string, required): Must be a valid MongoDB ObjectId.
+     - `otp` (string, required): Must be 6 characters.
+   - Response:
+     - `200 OK`: Returns ride details.
+     - `400 Bad Request`: Validation errors.
 
-**Headers:**  
-- `Authorization` (string, required): Bearer token.  
+5. **End Ride**
+   - Endpoint: `/rides/end-ride`
+   - Method: `POST`
+   - Request Body:
+     - `rideId` (string, required): Must be a valid MongoDB ObjectId.
+   - Response:
+     - `200 OK`: Returns ride details.
+     - `400 Bad Request`: Validation errors.
 
-**Response:**  
-- `200 OK`: Successfully logged out.  
-- `401 Unauthorized`: Invalid or expired token.  
+### Map Features
 
----
+1. **Get Coordinates**
+   - Endpoint: `/maps/get-coordinates`
+   - Method: `GET`
+   - Query Parameters:
+     - `address` (string, required): Min 3 characters.
+   - Response:
+     - `200 OK`: Returns coordinates.
+     - `400 Bad Request`: Validation errors.
+     - `404 Not Found`: Coordinates not found.
 
-## **2. Captain Endpoints**  
+2. **Get Distance and Time**
+   - Endpoint: `/maps/get-distance-time`
+   - Method: `GET`
+   - Query Parameters:
+     - `origin` (string, required): Min 3 characters.
+     - `destination` (string, required): Min 3 characters.
+   - Response:
+     - `200 OK`: Returns distance and time.
+     - `400 Bad Request`: Validation errors.
+     - `500 Internal Server Error`: Internal server error.
 
-### **POST** `/captains/register`  
-Register a new captain.  
+3. **Get AutoComplete Suggestions**
+   - Endpoint: `/maps/get-suggestions`
+   - Method: `GET`
+   - Query Parameters:
+     - `input` (string, required): Min 3 characters.
+   - Response:
+     - `200 OK`: Returns suggestions.
+     - `400 Bad Request`: Validation errors.
+     - `500 Internal Server Error`: Internal server error.
 
-**Request Body:**  
-- `fullname.firstname` (string, required): Min 3 characters.  
-- `fullname.lastname` (string, optional): Min 3 characters.  
-- `email` (string, required): Must be a valid email.  
-- `password` (string, required): Min 6 characters.  
-- `vehicle.color` (string, required): Min 3 characters.  
-- `vehicle.plate` (string, required): Min 3 characters.  
-- `vehicle.capacity` (number, required): Min value 1.  
-- `vehicle.vehicleType` (string, required): Must be one of `car`, `motorcycle`, or `auto`.  
+## Setup
 
-**Response:**  
-- `201 Created`: Returns a token and captain details.  
-- `400 Bad Request`: Validation errors or captain already exists.  
-
----
-
-### **POST** `/captains/login`  
-Authenticate a captain.  
-
-**Request Body:**  
-- `email` (string, required): Must be valid.  
-- `password` (string, required): Must not be empty.  
-
-**Response:**  
-- `200 OK`: Returns a token and captain details.  
-- `400/401`: Invalid credentials.  
-
----
-
-### **GET** `/captains/profile`  
-Retrieve the authenticated captain's profile.  
-
-**Headers:**  
-- `Authorization` (string, required): Bearer token or valid cookie.  
-
-**Response:**  
-- `200 OK`: Returns captain profile details.  
-- `401 Unauthorized`: Invalid or expired token.  
-
----
-
-### **GET** `/captains/logout`  
-Log out the authenticated captain by blacklisting the token.  
-
-**Headers:**  
-- `Authorization` (string, required): Bearer token or valid cookie.  
-
-**Response:**  
-- `200 OK`: Successfully logged out.  
-- `401 Unauthorized`: Invalid or expired token.  
-- `401 Unauthorized`: Token is blacklisted.  
-
----
-
-## **Authentication Middleware**  
-
-### `authCaptain` Middleware  
-Authenticates captains by verifying their tokens and checking if the token is blacklisted.  
-
-**Process:**  
-1. Extracts the token from cookies or the `Authorization` header.  
-2. Validates the token existence.  
-3. Checks if the token is blacklisted.  
-4. Verifies the token using `JWT_SECRET`.  
-5. Attaches captain details to `req.captain`.  
-
-**Error Responses:**  
-- `401 Unauthorized`: Missing, blacklisted, invalid, or expired token.  
-
----
-
-## **Setup**  
-
-1. Clone the repository:  
-   ```bash  
-   git clone <repository_url>  
+1. Clone the repository:
+   ```bash
+   git clone <repository_url>
