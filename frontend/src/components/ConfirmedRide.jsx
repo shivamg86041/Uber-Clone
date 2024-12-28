@@ -1,6 +1,7 @@
-import React from "react";
 
 const ConfirmedRide = (props) => {
+  const vehicleType=props.vehicleType;
+  const fare = props.fare;
   return (
     <div>
       <h5
@@ -24,20 +25,20 @@ const ConfirmedRide = (props) => {
             <i className="text-2xl ri-map-pin-user-line"></i>
             <div>
               <h3 className="text-xl font-medium">562/11-A</h3>
-              <p className="text-sm text-gray-600 ">Kankariya Talab, Bhopal</p>
+              <p className="text-sm text-gray-600 ">{props.pickup}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3 border-b-2">
             <i className="ri-map-pin-fill text-2xl"></i>
             <div>
               <h3 className="text-xl font-medium">562/11-A</h3>
-              <p className="text-sm text-gray-600 ">Kankariya Talab, Bhopal</p>
+              <p className="text-sm text-gray-600 ">{props.destination}</p>
             </div>
           </div>
           <div className="flex items-center gap-5 p-3">
             <i className="text-2xl ri-currency-fill"></i>
             <div>
-              <h3 className="text-xl font-medium">₹193.20</h3>
+              <h3 className="text-xl font-medium">₹{fare[vehicleType]}</h3>
               <p className="text-sm text-gray-600 ">Cash, Cash</p>
             </div>
           </div>
@@ -45,6 +46,7 @@ const ConfirmedRide = (props) => {
         <button onClick={() =>{
             props.setVehicleFound(true);
             props.setConfirmRidePanel(false);
+            props.createRide();
         }} className="w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg">
           Confirm
         </button>
